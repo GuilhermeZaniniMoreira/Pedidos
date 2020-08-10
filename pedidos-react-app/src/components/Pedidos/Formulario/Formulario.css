@@ -1,0 +1,23 @@
+form {
+    margin: 0 auto;
+    width: 800px;
+}
+
+#actions {
+    padding-top: 30px;
+}
+
+#actions button {
+    width: 50px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.container{
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+input[type=submit] {
+    margin-bottom: 20px;
+}

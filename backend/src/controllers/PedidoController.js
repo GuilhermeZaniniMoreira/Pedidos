@@ -7,10 +7,11 @@ module.exports = {
     },
     async store(request, response) {
 
-        const { numero, descricao, situacao, itens } = request.body;
+        const { numero, cliente, descricao, situacao, itens } = request.body;
 
         let pedido = await Pedido.create({
             numero,
+            cliente,
             descricao,
             situacao,
             itens
