@@ -2,19 +2,18 @@ const Pedido = require('../models/Pedido.js');
 
 module.exports = {
     async index(request, response) {
-        const pedidos = await pedidos.find();
+        const pedidos = await Pedido.find();
         return response.json(pedidos);
     },
     async store(request, response) {
 
-        const { numero, dataPedido, descricao,
-                situacao } = request.body;
+        const { numero, descricao, situacao, itens } = request.body;
 
-        const pedido = await Pedido.create({
+        let pedido = await Pedido.create({
             numero,
-            dataPedido,
             descricao,
-            situacao
+            situacao,
+            itens
         });
 
         response.json(pedido);

@@ -1,15 +1,19 @@
-const mongoose = require('mongoose')
+const { Schema, model } = require('mongoose');
 
-const PedidoSchema = new mongoose.Schema({
+const PedidoSchema = new Schema({
     numero: Number,
-    dataPedido: Date,
     descricao: String,
     situacao: String,
-    items: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Item'
+    itens: [{
+        'codigo': Number,
+        'descricao': String,
+        'quantidade': Number,
+        'valorUnitario': Number,
+        'desconto': Number,
+        'valorTotal': Number
     }]
-    
+}, {
+    timestamps: true
 });
 
-module.exports = mongoose.model('Pedido', PedidoSchema);
+module.exports = model('Pedido', PedidoSchema);
