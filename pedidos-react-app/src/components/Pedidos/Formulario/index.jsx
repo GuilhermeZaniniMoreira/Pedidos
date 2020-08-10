@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import api from '../../../services/api';
 
 import './Formulario.css';
@@ -10,13 +10,26 @@ export default function Formulario() {
     const [descricaoPedido, setDescricaoPedido] = useState("");
     const [situacaoPedido] = useState("Em análise");
 
+    const [pedidos, setPedidos] = useState([]);
+
+    useEffect(() => {
+        async function carregarPedidos() {
+            const response = await api.get('/pedidos');
+            setPedidos(response.data);
+            setNumero(response.data.length + 1);
+        }
+        carregarPedidos();
+    }, []);
+
     const [itens, setItens] = useState([
         { codigo: Number, descricao: String, quantidade: Number, valorUnitario: Number,
-          desconto: Number, valorDesconto: Number, valorTotal: Number }]);
+          desconto: Number, valorDesconto: 0, valorTotal: 0 }]);
 
     const handleItensChange = (index, event) => {
         const values = [...itens];
         if (event.target.name === "codigo") {
+            const itens = values.filter(item => item.codigo === event.target.value);
+            itens.length === 0 ? values[index].codigo = event.target.value : event.target.value = Number;
             values[index].codigo = event.target.value;
         } else if (event.target.name === "descricao") {
             values[index].descricao = event.target.value;
@@ -57,7 +70,8 @@ export default function Formulario() {
 
     const handleAddFields = () => {
         const values = [...itens];
-        values.push({ codigo: '', quantidade: '' });
+        values.push({ codigo: Number, descricao: String, quantidade: Number, valorUnitario: Number,
+            desconto: Number, valorDesconto: 0, valorTotal: 0 });
         setItens(values);
     };
     
@@ -87,8 +101,8 @@ export default function Formulario() {
                     type="text"
                     disabled={true}
                     className="form-control"
-                    id="codigo"
-                    name="codigo"
+                    id="numero"
+                    name="numero"
                     value={numero}
                     onChange={event => handleItensChange(event)} />
             </div>
@@ -123,6 +137,7 @@ export default function Formulario() {
                   type="number"
                   className="form-control"
                   id="codigo"
+                  min={1}
                   name="codigo"
                   onChange={event => handleItensChange(index, event)}
                 />
@@ -173,11 +188,11 @@ export default function Formulario() {
                 <label htmlFor="valorTotal">Desconto em R$</label>
                 <input
                   type="number" 
-                  className="form-control" 
+                  className="form-control"
+                  value={item.valorDesconto}
                   id="valorDesconto"
                   disabled={true}
                   name="valorDesconto"
-                  value={item.valorDesconto}
                 />
               </div>
               <div className="form-group col-sm-2">
@@ -186,24 +201,22 @@ export default function Formulario() {
                   type="number" 
                   className="form-control" 
                   id="valorTotal"
+                  value={item.valorTotal}
                   disabled={true}
                   name="valorTotal"
-                  value={item.valorTotal}
                 />
               </div>
               <div className="form-group col-sm-2" id="actions">
                 <button
                   className="btn btn-primary"
                   type="button"
-                  onClick={() => handleRemoveFields(index)}
-                >
+                  onClick={() => handleRemoveFields(index)}>
                   -
                 </button>
                 <button
                   className="btn btn-success"
                   type="button"
-                  onClick={() => handleAddFields()}
-                >
+                  onClick={() => handleAddFields()}>
                   +
                 </button>
               </div>

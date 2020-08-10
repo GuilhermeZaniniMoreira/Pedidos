@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../services/api';
+import { Table } from 'react-bootstrap';
 
 export default function Lista() {
 
@@ -11,11 +12,30 @@ export default function Lista() {
             setPedidos(response.data);
         }
         carregarPedidos();
-    });
+    }, []);
 
     return (
-        <div>
-            <h1></h1>
-        </div>
+        <Table striped bordered hover>
+            <thead>
+                <tr>
+                <th>Nº do pedido</th>
+                <th>Cliente</th>
+                <th>Descrição</th>
+                <th>Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    pedidos.map(pedido => (
+                        <tr key={pedido._id}>
+                        <td>{pedido.numero}</td>
+                        <td>{pedido.cliente}</td>
+                        <td>{pedido.descricao}</td>
+                        <td>{pedido.situacao}</td>
+                        </tr>
+                    ))
+                }
+            </tbody>
+        </Table>
     )
 };
