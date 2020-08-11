@@ -5,6 +5,13 @@ module.exports = {
         const pedidos = await Pedido.find();
         return response.json(pedidos);
     },
+    async show(request, response) {
+
+        const { id } = request.params;
+        const pedido = await Pedido.findById(id);
+        return response.json(pedido);
+
+    },
     async store(request, response) {
 
         const { numero, cliente, descricao, situacao, itens } = request.body;

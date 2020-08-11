@@ -1,5 +1,6 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import api from '../../../services/api';
+import { Redirect } from "react-router-dom";
 
 import './Formulario.css';
 
@@ -10,12 +11,12 @@ export default function Formulario() {
     const [descricaoPedido, setDescricaoPedido] = useState("");
     const [situacaoPedido] = useState("Em análise");
 
-    const [pedidos, setPedidos] = useState([]);
+    const [redirecionar, setRedirecionar] = useState(false);
+
 
     useEffect(() => {
         async function carregarPedidos() {
             const response = await api.get('/pedidos');
-            setPedidos(response.data);
             setNumero(response.data.length + 1);
         }
         carregarPedidos();
@@ -35,13 +36,14 @@ export default function Formulario() {
             values[index].descricao = event.target.value;
         } else if (event.target.name === "quantidade") {
             values[index].quantidade = event.target.value;
-
             if (values[index].desconto >= 0) {
                 var totalSemDesontoQuantidade = values[index].quantidade * values[index].valorUnitario;
                 var descontoQuantidade = (values[index].desconto / 100) * totalSemDesontoQuantidade;
+                values[index].valorDesconto = descontoQuantidade;
+                values[index].valorTotal = (totalSemDesontoQuantidade - descontoQuantidade)
                 if (!Number.isNaN(descontoQuantidade)) {
                     values[index].valorDesconto = descontoQuantidade;
-                    values[index].valorTotal = totalSemDesontoQuantidade - descontoQuantidade;
+                    values[index].valorTotal = (totalSemDesontoQuantidade - descontoQuantidade)
                 }
             }
 
@@ -53,7 +55,7 @@ export default function Formulario() {
                 var descontoValorUnitario = (values[index].desconto / 100) * totalSemDesontoValorUnitario;
                 if (!Number.isNaN(descontoValorUnitario)) {
                     values[index].valorDesconto = descontoValorUnitario;
-                    values[index].valorTotal = totalSemDesontoValorUnitario - descontoValorUnitario;
+                    values[index].valorTotal = (totalSemDesontoValorUnitario - descontoValorUnitario);
                 }
             }
 
@@ -61,8 +63,9 @@ export default function Formulario() {
             if (event.target.value >= 0 && event.target.value <= 100) {
                 values[index].desconto = event.target.value;
                 var desconto = (values[index].quantidade * values[index].valorUnitario) * (values[index].desconto / 100);
-                values[index].valorDesconto = desconto;
-                values[index].valorTotal = (values[index].quantidade * values[index].valorUnitario) - desconto;
+                values[index].valorDesconto = desconto
+                values[index].valorTotal = ((values[index].quantidade * values[index].valorUnitario) - desconto);
+                
             }
         }
         setItens(values);
@@ -89,7 +92,11 @@ export default function Formulario() {
             'descricao': descricaoPedido,
             'situacao': situacaoPedido,
             'itens': itens
-        });
+        }).then(() => setRedirecionar(true));
+    }
+
+    if (redirecionar) {
+      return <Redirect to='/somewhere'/>;
     }
 
     return (
@@ -163,9 +170,10 @@ export default function Formulario() {
                 />
               </div>
               <div className="form-group col-sm-2">
-                <label htmlFor="valorUnitario">Valor unitário</label>
+                <label htmlFor="valorUnitario">Unitário (R$)</label>
                 <input
-                  type="number" 
+                  type="number"
+                  step="0.01"
                   className="form-control"
                   id="valorUnitario"
                   name="valorUnitario"
@@ -173,7 +181,7 @@ export default function Formulario() {
                 />
               </div>
               <div className="form-group col-sm-2">
-                <label htmlFor="desconto">Desconto</label>
+                <label htmlFor="desconto">Desconto (%)</label>
                 <input
                   type="number" 
                   className="form-control" 
@@ -185,23 +193,23 @@ export default function Formulario() {
                 />
               </div>
               <div className="form-group col-sm-2">
-                <label htmlFor="valorTotal">Desconto em R$</label>
+                <label htmlFor="valorTotal">Desconto (R$)</label>
                 <input
                   type="number" 
                   className="form-control"
-                  value={item.valorDesconto}
+                  value={item.valorDesconto.toFixed(2)}
                   id="valorDesconto"
                   disabled={true}
                   name="valorDesconto"
                 />
               </div>
               <div className="form-group col-sm-2">
-                <label htmlFor="valorTotal">Valor total</label>
+                <label htmlFor="valorTotal">Total (R$)</label>
                 <input
                   type="number" 
                   className="form-control" 
                   id="valorTotal"
-                  value={item.valorTotal}
+                  value={item.valorTotal.toFixed(2)}
                   disabled={true}
                   name="valorTotal"
                 />
