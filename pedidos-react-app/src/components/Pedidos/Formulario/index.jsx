@@ -96,7 +96,7 @@ export default function Formulario() {
     }
 
     if (redirecionar) {
-      return <Redirect to='/somewhere'/>;
+      return <Redirect to='/'/>;
     }
 
     return (
